@@ -1,5 +1,98 @@
-function App() {
-  return <div></div>;
+import React, { Component } from 'react';
+import shortid from 'shortid';
+
+import ContactForm from './components/ContactForm/ContactForm';
+import ContactList from './components/ContactList/ContactList';
+import Filter from './components/Filter/Filter';
+
+class App extends Component {
+  state = {
+    contacts: [
+      { id: shortid.generate(), name: 'Rosie Simpson', number: '459-12-56' },
+      { id: shortid.generate(), name: 'Hermione Kline', number: '443-89-12' },
+      { id: shortid.generate(), name: 'Eden Clements', number: '645-17-79' },
+      { id: shortid.generate(), name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
+  };
+
+  addContact(e) {
+    const { nameInput, phoneInput } = e.target.form;
+
+    e.preventDefault();
+
+    if (this.checkAddedContact(e)) {
+      alert(`${nameInput.value} is already in contacts`);
+      return;
+    }
+
+    this.setState(prevState => {
+      const contacts = prevState.contacts.concat({
+        id: shortid.generate(),
+        name: nameInput.value,
+        number: phoneInput.value,
+      });
+
+      this.clearInputs(e);
+
+      return {
+        contacts,
+        filter: '',
+      };
+    });
+  }
+
+  clearInputs(e) {
+    const { nameInput, phoneInput } = e.target.form;
+
+    nameInput.value = '';
+    phoneInput.value = '';
+  }
+
+  changeFilter(e) {
+    this.setState({ filter: e.currentTarget.value });
+  }
+
+  getFilteredContacts() {
+    const { contacts, filter } = this.state;
+
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase()),
+    );
+  }
+
+  checkAddedContact(e) {
+    return this.state.contacts.find(
+      contact => contact.name === e.target.form.nameInput.value,
+    );
+  }
+
+  deleteContact(e) {
+    this.setState({
+      contacts: this.state.contacts.filter(
+        contact => contact.id !== e.target.id,
+      ),
+    });
+  }
+
+  render() {
+    const filteredContacts = this.getFilteredContacts();
+
+    return (
+      <div>
+        <h1>Phonebook</h1>
+        <ContactForm addContact={this.addContact.bind(this)} />
+
+        <h2>Contacts</h2>
+        <Filter onChange={this.changeFilter.bind(this)} />
+
+        <ContactList
+          contacts={filteredContacts}
+          onClick={this.deleteContact.bind(this)}
+        />
+      </div>
+    );
+  }
 }
 
 export default App;
