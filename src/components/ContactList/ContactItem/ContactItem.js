@@ -1,23 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import s from './ContactItem.module.css';
 
-class ContactItem extends Component {
-  render() {
-    const { contact, onClick } = this.props;
+export default function ContactItem({ contact, onClick }) {
+  const { name, number, id } = contact;
 
-    return (
-      <span>
-        {contact.name}: {contact.number}{' '}
-        <button className={s.deletBtn} id={contact.id} onClick={onClick}>
-          delete
-        </button>
-      </span>
-    );
-  }
+  return (
+    <span>
+      {name}: {number}{' '}
+      <button className={s.deletBtn} id={id} onClick={onClick}>
+        delete
+      </button>
+    </span>
+  );
 }
-
-export default ContactItem;
 
 ContactItem.propTypes = {
   contact: PropTypes.objectOf(PropTypes.string),
